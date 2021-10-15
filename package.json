@@ -1,0 +1,19 @@
+{
+  "name": "fullstack-backend",
+  "version": "1.0.0",
+  "description": "fullstackopen exercises",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/botondKulcsar/backend.git"
+  },
+  "author": "kecs",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/botondKulcsar/backend/issues"
+  },
+  "homepage": "https://github.com/botondKulcsar/backend#readme"
+}
