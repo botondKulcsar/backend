@@ -1,1 +1,1 @@
-https://b00s.herokuapp.com/api/persons
+https://b00s.herokuapp.com
