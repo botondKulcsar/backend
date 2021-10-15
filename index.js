@@ -1,6 +1,8 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const Person = require('./models/person');
 
 const morgan = require('morgan');
 
@@ -11,30 +13,7 @@ app.use(express.json());
 morgan.token('body', (req, res) => JSON.stringify(req.body))
 app.use(morgan(`:method :url :status :res[content-length] - :response-time ms :body`));
 
-let persons = [
-    { 
-      "id": 1,
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": 2,
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": 3,
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": 4,
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
-]
 
-const generateId = () => Math.floor(Math.random() * 100) + persons.length
 
 app.post('/api/persons', (request, response) => {
     const { name, number } = request.body;
@@ -46,31 +25,30 @@ app.post('/api/persons', (request, response) => {
         })
     }
 
-    const existingPerson = persons.find(p => p.name === name);
-    if (existingPerson) {
-        response.status(400);
-        return response.json({
-            error: `name must be unique`
-        })
-    }
-
-    const newPerson = { id: generateId(), name, number };
-    persons = persons.concat(newPerson)
-    response.status(201);
-    response.json(newPerson);
+    const newPerson = new Person({ name, number })
+   
+    newPerson.save().then(savedPerson => {
+        response.status(201);
+        response.json(savedPerson);
+    })
 })
 
 app.get('/api/persons', (request, response) => {
-    response.json(persons);
+    Person.find({}).then(persons => {
+        response.json(persons);
+    })
 })
 
 app.get(`/api/persons/:id`, (request, response) => {
-    const id = Number(request.params.id);
-    const person = persons.find(p => p.id === id);
-    if (!person) {
-        return response.status(404).send(`No person with id=${id} has been found`)
-    }
-    response.json(person);
+    // const id = Number(request.params.id);
+    // const person = persons.find(p => p.id === id);
+    // if (!person) {
+    //     return response.status(404).send(`No person with id=${id} has been found`)
+    // }
+    Person.findById(request.params.id).then(person => {
+        response.json(person);
+    })
+    
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -89,7 +67,7 @@ app.get(`/info`, (request, response) => {
     ${new Date()}`);
 })
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 
 app.listen(PORT, () => {
     console.log(`server is listening on port ${PORT}`);
